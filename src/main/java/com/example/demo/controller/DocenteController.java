@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,39 +41,33 @@ public class DocenteController {
                          BindingResult br) {
         if (br.hasErrors()) return "form-docente";
         docenteService.save(docente);
-        return "redirect:/docenti";
+        return "redirect:/docenti/lista";
     }
 
     // FORM EDIT
     @GetMapping("/{id}/edit")
-    public String showEdit(@PathVariable Long id, Model model) {
-        model.addAttribute("docente", docenteService.get(id));
+    public String showEdit(@PathVariable String id, Model model) {
+        model.addAttribute("docente", docenteService.get(Long.valueOf(id)));
         return "form-docente";
     }
 
     // AGGIORNA
     @PostMapping("/{id}")
-    public String update(@PathVariable Long id,
+    public String update(@PathVariable String id,
                          @ModelAttribute("docente") Docente docente,
                          BindingResult br) {
         if (br.hasErrors()) return "form-docente";
-        docente.setId(id);
+        docente.setId(Long.valueOf(id));
         docenteService.save(docente);
-        return "redirect:/docenti";
+        return "redirect:/docenti/lista";
     }
 
     // DELETE
     @GetMapping("/{id}/delete")
-    public String delete(@PathVariable Long id) {
-        docenteService.delete(id);
-        return "redirect:/docenti";
+    public String delete(@PathVariable String id) {
+        docenteService.delete(Long.valueOf(id));
+        return "redirect:/docenti/lista";
     }
-
-
-
-
-
-
 
 
 }

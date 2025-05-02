@@ -22,8 +22,7 @@ public class DocenteService {
         return docenteRepository.findById(id).orElseThrow();
     }
 
-    public Docente save(Docente d) {
-        return docenteRepository.save(d);
+    public void save(Docente d) {docenteRepository.save(d);
     }
 
     public void delete(Long id) {

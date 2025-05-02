@@ -1,4 +1,4 @@
-<%@ taglib uri="https://jakarta.ee/tags/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,12 +9,12 @@
 <body class="container mt-4">
 <h1>Elenco Docenti</h1>
 
-<a class="btn btn-primary mb-3" href="<c:url value='/docenti/new'/>">Nuovo Docente</a>
+<a class="btn btn-primary mb-3" href="<c:url value='/docenti/nuovo'/>">Nuovo Docente</a>
 
 <table class="table table-striped">
     <thead>
     <tr>
-        <th>ID</th><th>Nome</th><th>Cognome</th><th>Email</th><th>Azioni</th>
+        <th>ID</th><th>Nome</th><th>Cognome</th><th>Data_di_nascita</th><th>Azioni</th>
     </tr>
     </thead>
     <tbody>
@@ -23,7 +23,7 @@
             <td>${d.id}</td>
             <td>${d.nome}</td>
             <td>${d.cognome}</td>
-            <td>${d.email}</td>
+            <td>${d.data_di_nascita}</td>
             <td>
                 <a class="btn btn-sm btn-secondary" href="<c:url value='/docenti/${d.id}/edit'/>">Modifica</a>
                 <a class="btn btn-sm btn-danger"
