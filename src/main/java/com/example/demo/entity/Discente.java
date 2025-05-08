@@ -2,6 +2,9 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "discenti")
 public class Discente {
@@ -24,6 +27,15 @@ public class Discente {
 
     @Column(nullable = false)
     private Integer eta;
+
+    @ManyToMany(mappedBy = "discenti")
+    private List<Corso> corsi=new ArrayList<>();
+    public List<Corso> getCorsi() {
+        return corsi;
+    }
+    public void setCorsi(List<Corso> corsi) {
+        this.corsi = corsi;
+    }
 
     /* costruttori */
     public Discente() {}

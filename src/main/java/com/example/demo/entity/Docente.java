@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -24,6 +25,9 @@ public class Docente {
     @Column(nullable = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date data_di_nascita;
+
+    @OneToMany(mappedBy = "docente", cascade = CascadeType.ALL)
+    private List<Corso> corsi;
 
     /* costruttori */
     public Docente() {}
@@ -64,4 +68,6 @@ public class Docente {
     public void setData_di_nascita(Date data_di_nascita) {
         this.data_di_nascita = data_di_nascita;
     }
+
+    public String getNomeCognome() {return nome + " " + cognome;}
 }

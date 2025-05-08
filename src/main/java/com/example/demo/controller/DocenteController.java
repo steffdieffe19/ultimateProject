@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,9 +22,9 @@ public class DocenteController {
 
     // LISTA
     @GetMapping("/lista")
-    public String list(Model model) {
+    public String list(Model model) throws SQLException {
         List<Docente> docenti = new ArrayList<>();
-        docenti = docenteService.findAll();
+        docenti = docenteService.findAllSortedByData_di_nascitaDesc();
         model.addAttribute("docenti", docenti);
         return "list-docenti";
     }

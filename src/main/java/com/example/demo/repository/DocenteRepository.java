@@ -11,6 +11,6 @@ import java.util.List;
 public interface DocenteRepository extends JpaRepository<Docente, Long> {
 
 
-    @Query("SELECT d FROM Docente d WHERE d.nome = ?1")
-    List<Docente> findByNome(String nome);
+    @Query("SELECT d FROM Docente d ORDER BY d.data_di_nascita desc")
+    List<Docente> findAllSortedByData_di_nascitaDesc();
 }

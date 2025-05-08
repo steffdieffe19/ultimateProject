@@ -13,8 +13,7 @@ public class DiscenteService {
 
     @Autowired
     DiscenteRepository discenteRepository;
-
-    public List<Discente>findAll() {
+    public List<Discente> findAllSortedByNome() {
         return discenteRepository.findAll();
     }
 
@@ -23,4 +22,7 @@ public class DiscenteService {
     public void save(Discente d) {discenteRepository.save(d);}
 
     public void delete(Long id) {discenteRepository.deleteById(id);}
+
+
+
 }

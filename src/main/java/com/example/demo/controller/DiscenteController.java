@@ -5,9 +5,9 @@ import com.example.demo.entity.Discente;
 import com.example.demo.service.DiscenteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,18 +22,19 @@ public class DiscenteController {
 
     // LISTA
     @GetMapping("/lista")
-    public String list(Model model) {
-        List<Discente> discenti = new ArrayList<>();
-        discenti = discenteService.findAll();
-        model.addAttribute("discenti", discenti);
-        return "list-discenti";
+    public ModelAndView list() {
+        List<Discente> discenti = discenteService.findAllSortedByNome();
+        ModelAndView mav = new ModelAndView("list-discenti");
+        mav.addObject("discenti",discenti);
+        return mav;
     }
 
     // FORM NUOVO
     @GetMapping("/nuovo")
-    public String showAdd(Model model) {
-        model.addAttribute("discente", new Discente());
-        return "form-discente";
+    public ModelAndView showAdd() {
+        ModelAndView mav = new ModelAndView(("form-discente"));
+        mav.addObject("discente",new Discente());
+        return mav;
     }
 
     // SALVA NUOVO
@@ -47,9 +48,10 @@ public class DiscenteController {
 
     // FORM EDIT
     @GetMapping("/{id}/edit")
-    public String showEdit(@PathVariable String id, Model model) {
-        model.addAttribute("discente", discenteService.get(Long.valueOf(id)));
-        return "form-discente";
+    public ModelAndView showEdit(@PathVariable Long id) {
+        ModelAndView mav = new ModelAndView("form-discente");
+        mav.addObject("discente", discenteService.get(Long.valueOf(id)));
+        return mav;
     }
 
     // AGGIORNA

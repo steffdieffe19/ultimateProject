@@ -5,6 +5,7 @@ import com.example.demo.repository.DocenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -14,8 +15,8 @@ public class DocenteService {
     @Autowired
     DocenteRepository docenteRepository;
 
-    public List<Docente> findAll() {
-        return docenteRepository.findAll();
+    public List<Docente> findAllSortedByData_di_nascitaDesc() throws SQLException {
+        return docenteRepository.findAllSortedByData_di_nascitaDesc();
     }
 
     public Docente get(Long id) {
