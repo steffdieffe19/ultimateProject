@@ -37,17 +37,10 @@ public class CorsoDTO {
         public void setAnno_accademico(Integer anno_accademico) {
             this.anno_accademico = anno_accademico;
         }
-        public Long getId_docente() {
-            return id_docente;
-        }
-        public void setId_docente(Long id_docente) {
-            this.id_docente = id_docente;
-        }
-        public List<Long> getDiscentiId() {
-            return discentiId;
-        }
-        public void setDiscentiId(List<Long> discentiId) {
-            this.discentiId = discentiId;
-        }
+        public Long getDocenteId() { return id_docente;}
+        public void setDocenteId(Long docenteId) { this.id_docente = docenteId; }
+        public List<Long> getDiscentiIds() {return discentiId;}
+        public void setDiscentiIds(List<Long> discentiId) { this.discentiId = discentiId;}
 
-    }
+
+}

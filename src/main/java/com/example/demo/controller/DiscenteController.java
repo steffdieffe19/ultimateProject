@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.Mapper.DiscenteMapper;
 import com.example.demo.data.DTO.DiscenteDTO;
 import com.example.demo.service.DiscenteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,15 @@ import java.util.List;
 
 public class DiscenteController {
 
+    private DiscenteService discenteService;
+    private DiscenteMapper discenteMapper;
+
     @Autowired
-    DiscenteService discenteService;
+    public DiscenteController(DiscenteService discenteService, DiscenteMapper discenteMapper) {
+        this.discenteService = discenteService;
+        this.discenteMapper = discenteMapper;
+    }
+
 
     // LISTA
     @GetMapping("/lista")
@@ -32,7 +40,7 @@ public class DiscenteController {
     @GetMapping("/nuovo")
     public ModelAndView showAdd() {
         ModelAndView mav = new ModelAndView(("form-discente"));
-        mav.addObject("discente",new DiscenteDTO(null, "", "", "",0, 0));
+        mav.addObject("discente",new DiscenteDTO());
         return mav;
     }
 

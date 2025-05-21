@@ -42,8 +42,8 @@ public class DiscenteService {
             // Imposta un valore di default se il campo è vuoto
             discente.setCitta_di_residenza("Città sconosciuta");  // Modifica con un valore di default appropriato
         }
-        if(discenteDTO.getCorsiId()!=null){
-            List<Corso> corsi= corsoRepository.findAllById(discenteDTO.getCorsiId());
+        if(discenteDTO.getCorsiIds()!=null){
+            List<Corso> corsi= corsoRepository.findAllById(discenteDTO.getCorsiIds());
             discente.setCorsi(corsi);
         }
         discenteRepository.save(discente);

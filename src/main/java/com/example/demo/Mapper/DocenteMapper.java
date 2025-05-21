@@ -3,37 +3,67 @@ package com.example.demo.Mapper;
 import com.example.demo.data.DTO.DocenteDTO;
 import com.example.demo.data.entity.Corso;
 import com.example.demo.data.entity.Docente;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
-public interface DocenteMapper {
+@Component
+public class DocenteMapper {
 
-    @Mapping(target = "corsiId", source = "corsi", qualifiedByName = "mapCorsiToIds")
-    DocenteDTO toDTO(Docente docente);
+    private final ModelMapper modelMapper;
 
-    @Mapping(target = "corsi", source = "corsiId", qualifiedByName = "mapIdsToCorsi")
-    Docente toEntity(DocenteDTO docenteDTO);
-
-    @Named("mapCorsiToIds")
-    default List<Long> mapCorsiToIds(List<Corso> corsi) {
-        if (corsi == null) return null;
-        return corsi.stream().map(Corso::getId).collect(Collectors.toList());
+    public DocenteMapper() {
+        this.modelMapper = new ModelMapper();
+        configureModelMapper();
     }
 
-    List<DocenteDTO> toDTOList(List<Docente> docenti);
+    private void configureModelMapper() {
+        modelMapper.createTypeMap(Docente.class, DocenteDTO.class).addMappings(
+                mapper -> mapper.map(src -> mapCorsiToIds(src.getCorsi()), DocenteDTO::setCorsiId));
+        modelMapper.createTypeMap(DocenteDTO.class, Docente.class).addMappings(
+                mapper -> mapper.map(src -> mapIdsToCorsi(src.getCorsiId()), Docente::setCorsi));
+    }
+public DocenteDTO toDTO(Docente docente) {
+        if (docente == null) {
+            return null;
+    }
+        return modelMapper.map(docente, DocenteDTO.class);
+    }
 
-    @Named("mapIdsToCorsi")
-    default List<Corso> mapIdsToCorsi(List<Long> ids) {
+    public Docente toEntity(DocenteDTO docenteDTO) {
+        if (docenteDTO == null) {
+            return null;
+        }
+        return modelMapper.map(docenteDTO, Docente.class);
+    }
+    public List<DocenteDTO> toDTOList(List<Docente> docenti) {
+        if (docenti == null) {
+            return null;
+        }
+        return docenti.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<Long> mapCorsiToIds(List<Corso> corsi) {
+       if (corsi == null) return null;
+       return corsi.stream()
+                .map(Corso::getId)
+                .collect(Collectors.toList());
+    }
+    public List<Corso> mapIdsToCorsi(List<Long> ids) {
         if (ids == null) return null;
-        return ids.stream().map(id -> {
-            Corso corso = new Corso();
-            corso.setId(id);
-            return corso;
-        }).collect(Collectors.toList());
+        return ids.stream()
+                .map(id -> {
+                    Corso corso = new Corso();
+                    corso.setId(id);
+                    return corso;
+                })
+                .collect(Collectors.toList());
     }
+
+
 }

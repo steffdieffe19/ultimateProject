@@ -1,5 +1,6 @@
 package com.example.demo.data.DTO;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DiscenteDTO {
@@ -9,21 +10,22 @@ public class DiscenteDTO {
     private String citta_di_residenza;
     private Integer matricola;
     private Integer eta;
-    private List<Long> corsiId;
+    private List<Long> corsiIds= new ArrayList<>();
 
+
+    public DiscenteDTO() {
+
+    }
 
     //COSTRUTTORI
-    public DiscenteDTO(Long id, String nome, String cognome,String citta_di_residenza , Integer matricola, Integer eta) {
+    public DiscenteDTO(Long id, String nome, String cognome,String citta_di_residenza , Integer matricola, Integer eta,List<Long> corsiIds) {
         this.id = id;
         this.nome = nome;
         this.cognome = cognome;
         this.citta_di_residenza = citta_di_residenza;
         this.matricola = matricola;
         this.eta = eta;
-    }
-
-    public DiscenteDTO() {
-
+        this.corsiIds = corsiIds;
     }
 
     //Getter e Setter
@@ -73,9 +75,9 @@ public class DiscenteDTO {
         this.eta = eta;
     }
 
-    public List<Long> getCorsiId() {return corsiId;}
-    public void setCorsiId(List<Long> corsiId) {this.corsiId = corsiId;}
+    public List<Long> getCorsiIds() {return corsiIds;}
 
+    public void setCorsiIds(List<Long> corsiIds) {this.corsiIds = corsiIds;}
 
 }
 

@@ -61,7 +61,7 @@
 
     <div class="mb-3">
        <form:label path="docente" class="form-label">Docente</form:label>
-        <form:select path="docente" class="form-select">
+        <form:select path="docenteId" class="form-select">
            <c:forEach var="d" items="${docenti}">
              <option value="${d.id}" ${corso.docente != null && corso.docente.id == d.id ? 'selected' : ''}>
                   ${d.nome}

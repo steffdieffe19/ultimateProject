@@ -15,4 +15,6 @@ public interface CorsoRepository extends JpaRepository<Corso, Long> {
     List<Corso> findAllWithDocente();
 
     List<Corso> findByDocenteId(Long docenteId);
+    List<Corso> findByNome(String nome);
+    List<Corso> findByNomeContainingIgnoreCase(String nome);
 }

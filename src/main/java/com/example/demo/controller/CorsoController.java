@@ -1,9 +1,11 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.data.DTO.CorsoDTO;
 import com.example.demo.data.entity.Corso;
 import com.example.demo.data.entity.Discente;
 import com.example.demo.repository.CorsoRepository;
+import com.example.demo.repository.DiscenteRepository;
 import com.example.demo.service.CorsoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,17 +23,14 @@ import java.sql.SQLException;
 public class CorsoController {
 
     @Autowired
-    CorsoService corsoService;
+    private CorsoService corsoService;
     @Autowired
-    private CorsoRepository corsoRepository;
-
-    @Autowired
-    private com.example.demo.repository.DiscenteRepository discenteRepository;
+    private DiscenteRepository discenteRepository;
 
     // LISTA
     @GetMapping
     public ModelAndView list() throws SQLException {
-        List<Corso> corsi = corsoService.findAllSortedByNome();
+        List<CorsoDTO> corsi = corsoService.getAllCorsi();
         ModelAndView mav = new ModelAndView("list-corsi");
         mav.addObject("corsi", corsi);
         return mav;
@@ -41,7 +40,7 @@ public class CorsoController {
     @GetMapping("/nuovo")
     public ModelAndView showAdd() {
         ModelAndView mav = new ModelAndView("form-corso");
-        mav.addObject("corso", new Corso());
+        mav.addObject("corso", new CorsoDTO());
         mav.addObject("docenti",corsoService.getAllDocenti());
         mav.addObject("tuttiDiscenti", discenteRepository.findAll());
         return mav;
@@ -49,17 +48,13 @@ public class CorsoController {
 
     // SALVA NUOVO
     @PostMapping
-    public String create(@ModelAttribute("corso") Corso corso,
+    public String create(@ModelAttribute("corso") CorsoDTO corsoDTO,
                          @RequestParam(value = "discenteIds", required = false) List<Long> discenteIds,
                          BindingResult br) {
         if (br.hasErrors()) return "form-corso";
 
-        List<Discente> discenti = discenteIds != null
-                ? discenteRepository.findAllById(discenteIds)
-                : new ArrayList<>();
-
-        corso.setDiscenti(discenti);
-        corsoService.save(corso);
+        corsoDTO.setDiscentiIds(discenteIds);
+        corsoService.save(corsoDTO);
         return "redirect:/corso";
     }
 
@@ -72,30 +67,25 @@ public class CorsoController {
         mav.addObject("tuttiDiscenti", discenteRepository.findAll());
         return mav;
     }
-
-    // DELETE
-    @PostMapping("/delete")
-    public String delete(@RequestParam Long id) {
-        corsoService.delete(id);
-        return "redirect:/corso";
-    }
-
     // GET DISCENTI
 
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
-                         @ModelAttribute("corso") Corso corso,
+                         @ModelAttribute("corso") CorsoDTO corsoDTO,
                          @RequestParam(value = "discenteIds", required = false) List<Long> discenteIds,
                          BindingResult br) {
         if (br.hasErrors()) return "form-corso";
 
-        List<Discente> discenti = discenteIds != null
-                ? discenteRepository.findAllById(discenteIds)
-                : new ArrayList<>();
+        corsoDTO.setId(id);
+        corsoDTO.setDiscentiIds(discenteIds);
+        corsoService.save(corsoDTO);
 
-        corso.setDiscenti(discenti);
-        corsoService.save(corso);
-
+        return "redirect:/corso";
+    }
+    // DELETE
+    @PostMapping("/delete")
+    public String delete(@RequestParam Long id) {
+        corsoService.delete(id);
         return "redirect:/corso";
     }
 

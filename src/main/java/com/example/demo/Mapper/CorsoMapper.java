@@ -3,28 +3,89 @@ package com.example.demo.Mapper;
 import com.example.demo.data.DTO.CorsoDTO;
 import com.example.demo.data.entity.Corso;
 import com.example.demo.data.entity.Discente;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+import com.example.demo.data.entity.Docente;
+import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
+@Component
+public class CorsoMapper {
 
-public interface CorsoMapper {
-    @Mapping(source = "docente.id", target = "id_docente")
-    @Mapping(source = "discenti", target = "discentiId", qualifiedByName = "mapDiscentiToIds" )
-    CorsoDTO toDto(Corso corso);
+    public CorsoDTO toDTO(Corso entity) {
+        if (entity == null) {
+            return null;
+        }
 
-    @Mapping(source = "id_docente", target = "docente.id")
-    @Mapping(target = "discenti", ignore = true)
-    Corso toEntity(CorsoDTO corsoDTO);
+        CorsoDTO dto = new CorsoDTO();
+        dto.setId(entity.getId());
+        dto.setNome(entity.getNome());
+        dto.setAnno_accademico(entity.getAnno_accademico());
+        
+        if (entity.getDocente() != null) {
+            dto.setDocenteId(entity.getDocente().getId());
+        }
+        
+        if (entity.getDiscenti() != null) {
+            List<Long> discentiIds = entity.getDiscenti().stream()
+                    .map(Discente::getId)
+                    .collect(Collectors.toList());
+            dto.setDiscentiIds(discentiIds);
+        } else {
+            dto.setDiscentiIds(new ArrayList<>());
+        }
+        
+        return dto;
+    }
 
-    List<CorsoDTO> toDtoList(List<Corso> corsi);
+    public Corso toEntity(CorsoDTO dto) {
+        if (dto == null) {
+            return null;
+        }
 
-    @Named("mapDiscentiToIds")
-    static List<Long> mapDiscentiToIds(List<Discente>discenti){
-        if (discenti ==null) return null;
-        return discenti.stream().map(Discente::getId).toList();
+        Corso entity = new Corso();
+        entity.setId(dto.getId());
+        entity.setNome(dto.getNome());
+        entity.setAnno_accademico(dto.getAnno_accademico());
+        
+        if (dto.getDocenteId() != null) {
+            Docente docente = new Docente();
+            docente.setId(dto.getDocenteId());
+            entity.setDocente(docente);
+        }
+        
+        if (dto.getDiscentiIds() != null) {
+            List<Discente> discenti = dto.getDiscentiIds().stream()
+                    .map(id -> {
+                        Discente discente = new Discente();
+                        discente.setId(id);
+                        return discente;
+                    })
+                    .collect(Collectors.toList());
+            entity.setDiscenti(discenti);
+        } else {
+            entity.setDiscenti(new ArrayList<>());
+        }
+        
+        return entity;
+    }
+
+    public List<CorsoDTO> toDTOList(List<Corso> entityList) {
+        if (entityList == null) {
+            return new ArrayList<>();
+        }
+        return entityList.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<Corso> toEntityList(List<CorsoDTO> dtoList) {
+        if (dtoList == null) {
+            return new ArrayList<>();
+        }
+        return dtoList.stream()
+                .map(this::toEntity)
+                .collect(Collectors.toList());
     }
 }
