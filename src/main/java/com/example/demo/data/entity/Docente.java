@@ -1,5 +1,6 @@
-package com.example.demo.entity;
+package com.example.demo.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -13,6 +14,7 @@ public class Docente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @Column(nullable = false)

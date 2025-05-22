@@ -1,75 +1,65 @@
 package com.example.demo.controller;
 
 
-import com.example.demo.entity.Discente;
+import com.example.demo.data.entity.Corso;
+import com.example.demo.data.entity.Discente;
 import com.example.demo.service.DiscenteService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@Controller
-@RequestMapping("/discenti")
+
+@RestController
+@RequestMapping("api/discenti")
+@CrossOrigin(origins = "*")
+
 
 public class DiscenteController {
 
+    private final DiscenteService discenteService;
+
     @Autowired
-    DiscenteService discenteService;
-
-    // LISTA
-    @GetMapping("/lista")
-    public ModelAndView list() {
-        List<Discente> discenti = discenteService.findAllSortedByNome();
-        ModelAndView mav = new ModelAndView("list-discenti");
-        mav.addObject("discenti",discenti);
-        return mav;
+    public DiscenteController(DiscenteService discenteService) {
+        this.discenteService = discenteService;
     }
 
-    // FORM NUOVO
-    @GetMapping("/nuovo")
-    public ModelAndView showAdd() {
-        ModelAndView mav = new ModelAndView(("form-discente"));
-        mav.addObject("discente",new Discente());
-        return mav;
+    @GetMapping
+    public List<Discente> getAllDiscenti() {
+        return discenteService.getAllDiscenti();
     }
-
-    // SALVA NUOVO
+    @GetMapping("/{matricola}")
+    public ResponseEntity<Discente> getDiscenteByMatricola(@PathVariable Integer matricola) {
+        Optional<Discente> discente = discenteService.getDiscenteByMatricola(matricola);
+        return discente.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
     @PostMapping
-    public String create(@ModelAttribute("discente") Discente discente,
-                         BindingResult br) {
-        if (br.hasErrors()) return "form-discente";
-        discenteService.save(discente);
-        return "redirect:/discenti/lista";
+    public Discente createDiscente(@RequestBody Discente discente){
+        return discenteService.createDiscente(discente);
     }
-
-    // FORM EDIT
-    @GetMapping("/{id}/edit")
-    public ModelAndView showEdit(@PathVariable Long id) {
-        ModelAndView mav = new ModelAndView("form-discente");
-        mav.addObject("discente", discenteService.get(Long.valueOf(id)));
-        return mav;
-    }
-
-    // AGGIORNA
-    @PostMapping("/{id}")
-    public String update(@PathVariable String id,
-                         @ModelAttribute("discente") Discente discente,
-                         BindingResult br) {
-        if (br.hasErrors()) return "form-discente";
-        discente.setId(Long.valueOf(id));
-        discenteService.save(discente);
-        return "redirect:/discenti/lista";
-    }
-
     // DELETE
-    @GetMapping("/{id}/delete")
-    public String delete(@PathVariable String id) {
-        discenteService.delete(Long.valueOf(id));
-        return "redirect:/discenti/lista";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDiscente (@PathVariable Long id){
+        discenteService.delete(id);
+        return ResponseEntity.noContent().build();
     }
-
+    @PostMapping("/{id_discente}/corsi/{id_corso}")
+    public ResponseEntity<Discente> aggiungiCorso (
+            @PathVariable Long id_discente,
+            @PathVariable Long id_corso) {
+        return ResponseEntity.ok(discenteService.aggiungiCorso(id_discente, id_corso));
+    }
+    @DeleteMapping("/{id_discente}/corsi/{id_corso}")
+    public ResponseEntity<Discente> rimuoviCorso (
+            @PathVariable Long id_discente,
+            @PathVariable Long id_corso) {
+        return ResponseEntity.ok(discenteService.rimuoviCorso(id_discente, id_corso));
+    }
+    @GetMapping("/{id_discente}/corsi")
+    public ResponseEntity<List<Corso>> getCorsiDiscente (
+            @PathVariable Long id_discente) {
+        return ResponseEntity.ok(discenteService.getCorsiDiscente(id_discente));
+    }
 }

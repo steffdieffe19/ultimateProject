@@ -1,32 +1,40 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.Docente;
+import com.example.demo.data.entity.Docente;
 import com.example.demo.repository.DocenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DocenteService {
 
+   private final DocenteRepository docenteRepository;
 
     @Autowired
-    DocenteRepository docenteRepository;
-
-    public List<Docente> findAllSortedByData_di_nascitaDesc() throws SQLException {
-        return docenteRepository.findAllSortedByData_di_nascitaDesc();
+    public DocenteService(DocenteRepository docenteRepository){
+        this.docenteRepository=docenteRepository;
+    }
+    public List<Docente> getAllDocenti()  {
+        return docenteRepository.findAll();
     }
 
-    public Docente get(Long id) {
-        return docenteRepository.findById(id).orElseThrow();
+    public Optional<Docente> getDocenteById(Long id) {
+        return docenteRepository.findById(id);
     }
 
-    public void save(Docente d) {docenteRepository.save(d);
+    public Docente createDocente(Docente docente) {
+        return docenteRepository.save(docente);
     }
 
     public void delete(Long id) {
-        docenteRepository.deleteById(id);
+
+        if (docenteRepository.existsById(id)) {
+            docenteRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Docente non trovato" + id);
+        }
     }
 }

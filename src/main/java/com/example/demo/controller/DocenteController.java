@@ -1,75 +1,47 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.Docente;
+import com.example.demo.data.entity.Docente;
+import com.example.demo.service.DiscenteService;
 import com.example.demo.service.DocenteService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@Controller
-@RequestMapping("/docenti")
+@RestController
+@RequestMapping("api/docenti")
+
 public class DocenteController {
 
     @Autowired
-    DocenteService docenteService;
+    private DocenteService docenteService;
+    @Autowired
+    private DiscenteService discenteService;
 
-    // LISTA
-    @GetMapping("/lista")
-    public String list(Model model) throws SQLException {
-        List<Docente> docenti = new ArrayList<>();
-        docenti = docenteService.findAllSortedByData_di_nascitaDesc();
-        model.addAttribute("docenti", docenti);
-        return "list-docenti";
+    @GetMapping
+    public List<Docente> getAllDocenti() {
+        return docenteService.getAllDocenti();
     }
 
-    // FORM NUOVO
-    @GetMapping("/nuovo")
-    public String showAdd(Model model) {
-        model.addAttribute("docente", new Docente());
-        return "form-docente";
+    @GetMapping("/{id}")
+    public ResponseEntity<Docente> getDocenteById (@PathVariable Long id) {
+        Optional<Docente> docente =  docenteService.getDocenteById(id);
+        return docente.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // SALVA NUOVO
     @PostMapping
-    public String create(@ModelAttribute("docente") Docente docente,
-                         BindingResult br) {
-        if (br.hasErrors()) return "form-docente";
-        docenteService.save(docente);
-        return "redirect:/docenti/lista";
+    public Docente create(@RequestBody Docente docente){
+        return docenteService.createDocente(docente);
     }
 
-    // FORM EDIT
-    @GetMapping("/{id}/edit")
-    public String showEdit(@PathVariable String id, Model model) {
-        model.addAttribute("docente", docenteService.get(Long.valueOf(id)));
-        return "form-docente";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDocente (@PathVariable Long id) {
+        discenteService.delete(id);
+        return ResponseEntity.noContent().build();
     }
-
-    // AGGIORNA
-    @PostMapping("/{id}")
-    public String update(@PathVariable String id,
-                         @ModelAttribute("docente") Docente docente,
-                         BindingResult br) {
-        if (br.hasErrors()) return "form-docente";
-        docente.setId(Long.valueOf(id));
-        docenteService.save(docente);
-        return "redirect:/docenti/lista";
-    }
-
-    // DELETE
-    @GetMapping("/{id}/delete")
-    public String delete(@PathVariable String id) {
-        docenteService.delete(Long.valueOf(id));
-        return "redirect:/docenti/lista";
-    }
-
 
 }
 
