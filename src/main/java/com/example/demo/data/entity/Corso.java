@@ -1,5 +1,6 @@
-package com.example.demo.entity;
+package com.example.demo.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 public class Corso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @Column(nullable = false)
@@ -80,4 +82,5 @@ public class Corso {
     public void setDocente(Docente docente) {
         this.docente = docente;
     }
+
 }

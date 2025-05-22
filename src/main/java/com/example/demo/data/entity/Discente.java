@@ -1,5 +1,6 @@
-package com.example.demo.entity;
+package com.example.demo.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ public class Discente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @Column(nullable = false)
@@ -22,7 +24,7 @@ public class Discente {
     @Column(nullable = false)
     private String citta_di_residenza;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private Integer matricola;
 
     @Column(nullable = false)

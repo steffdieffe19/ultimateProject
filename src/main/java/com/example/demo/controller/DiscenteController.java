@@ -1,75 +1,102 @@
 package com.example.demo.controller;
 
 
-import com.example.demo.entity.Discente;
+import com.example.demo.data.DTO.DiscenteDTO;
+import com.example.demo.data.entity.Corso;
+import com.example.demo.data.entity.Discente;
 import com.example.demo.service.DiscenteService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@Controller
-@RequestMapping("/discenti")
+
+@RestController
+@RequestMapping("api/discenti")
+@CrossOrigin(origins = "*")
+
 
 public class DiscenteController {
 
+    private final DiscenteService discenteService;
+
     @Autowired
-    DiscenteService discenteService;
-
-    // LISTA
-    @GetMapping("/lista")
-    public ModelAndView list() {
-        List<Discente> discenti = discenteService.findAllSortedByNome();
-        ModelAndView mav = new ModelAndView("list-discenti");
-        mav.addObject("discenti",discenti);
-        return mav;
+    public DiscenteController(DiscenteService discenteService) {
+        this.discenteService = discenteService;
     }
 
-    // FORM NUOVO
-    @GetMapping("/nuovo")
-    public ModelAndView showAdd() {
-        ModelAndView mav = new ModelAndView(("form-discente"));
-        mav.addObject("discente",new Discente());
-        return mav;
+    @GetMapping
+    public List<DiscenteDTO> getAllDiscenti() {
+        return discenteService.getAllDiscenti()
+                .stream()
+                .map(this::toDTO)
+                .toList();
     }
-
-    // SALVA NUOVO
-    @PostMapping
-    public String create(@ModelAttribute("discente") Discente discente,
-                         BindingResult br) {
-        if (br.hasErrors()) return "form-discente";
-        discenteService.save(discente);
-        return "redirect:/discenti/lista";
+    private DiscenteDTO toDTO(Discente d) {
+        DiscenteDTO dto = new DiscenteDTO();
+        dto.setNome(d.getNome());
+        dto.setCognome(d.getCognome());
+        dto.setCitta_di_residenza(d.getCitta_di_residenza());
+        dto.setMatricola(d.getMatricola());
+        dto.setEta(d.getEta());
+        return dto;
     }
-
-    // FORM EDIT
-    @GetMapping("/{id}/edit")
-    public ModelAndView showEdit(@PathVariable Long id) {
-        ModelAndView mav = new ModelAndView("form-discente");
-        mav.addObject("discente", discenteService.get(Long.valueOf(id)));
-        return mav;
+    @GetMapping("/{nome}/{cognome}")
+    public ResponseEntity<DiscenteDTO> getDiscenteByNomeAndCognome(@PathVariable String nome, @PathVariable String cognome) {
+        Optional<Discente> discente = discenteService.getDiscenteByNomeAndCognome(nome, cognome);
+        return discente.map(d -> ResponseEntity.ok(toDTO(d)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
-    // AGGIORNA
-    @PostMapping("/{id}")
-    public String update(@PathVariable String id,
-                         @ModelAttribute("discente") Discente discente,
-                         BindingResult br) {
-        if (br.hasErrors()) return "form-discente";
-        discente.setId(Long.valueOf(id));
-        discenteService.save(discente);
-        return "redirect:/discenti/lista";
+    @PostMapping("/nuovo")
+    public ResponseEntity<DiscenteDTO> createDiscente(@RequestBody Discente discente) {
+        Discente saved = discenteService.createDiscente(discente);
+        return ResponseEntity.ok(toDTO(saved));
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<DiscenteDTO> updateDiscente(
+            @PathVariable Long id,
+            @RequestBody Discente updatedDiscente) {
+        Optional<Discente> existing = discenteService.getDiscenteById(id);
+        if (existing.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
+        Discente discente = existing.get();
+        discente.setNome(updatedDiscente.getNome());
+        discente.setCognome(updatedDiscente.getCognome());
+        discente.setMatricola(updatedDiscente.getMatricola());
+        discente.setCitta_di_residenza(updatedDiscente.getCitta_di_residenza());
+        discente.setEta(updatedDiscente.getEta());
+
+        Discente saved = discenteService.updateDiscente(discente);
+        return ResponseEntity.ok(toDTO(saved));
+    }
     // DELETE
-    @GetMapping("/{id}/delete")
-    public String delete(@PathVariable String id) {
-        discenteService.delete(Long.valueOf(id));
-        return "redirect:/discenti/lista";
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDiscente(@PathVariable Long id) {
+        discenteService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+    @PostMapping("/{id_discente}/corsi/{id_corso}")
+    public ResponseEntity<DiscenteDTO> aggiungiCorso(
+            @PathVariable Long id_discente,
+            @PathVariable Long id_corso) {
+        Discente updated = discenteService.aggiungiCorso(id_discente, id_corso);
+        return ResponseEntity.ok(toDTO(updated));
     }
 
+    @DeleteMapping("/{id_discente}/corsi/{id_corso}")
+    public ResponseEntity<DiscenteDTO> rimuoviCorso(
+            @PathVariable Long id_discente,
+            @PathVariable Long id_corso) {
+        Discente updated = discenteService.rimuoviCorso(id_discente, id_corso);
+        return ResponseEntity.ok(toDTO(updated));
+    }
+    @GetMapping("/{id_discente}/corsi")
+    public ResponseEntity<List<Corso>> getCorsiDiscente (
+            @PathVariable Long id_discente) {
+        return ResponseEntity.ok(discenteService.getCorsiDiscente(id_discente));
+    }
 }
