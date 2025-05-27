@@ -1,23 +1,19 @@
 package com.example.demo.controller;
 
 
-import com.example.demo.entity.Corso;
-import com.example.demo.entity.Discente;
-import com.example.demo.entity.Docente;
+import com.example.demo.data.entity.Corso;
+import com.example.demo.data.entity.Discente;
 import com.example.demo.repository.CorsoRepository;
 import com.example.demo.service.CorsoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.sql.SQLException;
-import java.util.Map;
 
 
 @Controller
@@ -47,13 +43,22 @@ public class CorsoController {
         ModelAndView mav = new ModelAndView("form-corso");
         mav.addObject("corso", new Corso());
         mav.addObject("docenti",corsoService.getAllDocenti());
+        mav.addObject("tuttiDiscenti", discenteRepository.findAll());
         return mav;
     }
 
     // SALVA NUOVO
     @PostMapping
-    public String create(@ModelAttribute("corso") Corso corso, BindingResult br) {
+    public String create(@ModelAttribute("corso") Corso corso,
+                         @RequestParam(value = "discenteIds", required = false) List<Long> discenteIds,
+                         BindingResult br) {
         if (br.hasErrors()) return "form-corso";
+
+        List<Discente> discenti = discenteIds != null
+                ? discenteRepository.findAllById(discenteIds)
+                : new ArrayList<>();
+
+        corso.setDiscenti(discenti);
         corsoService.save(corso);
         return "redirect:/corso";
     }
