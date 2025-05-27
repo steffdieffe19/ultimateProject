@@ -1,5 +1,6 @@
 package com.example.demo.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -13,6 +14,7 @@ public class Docente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @Column(nullable = false)
@@ -67,9 +69,12 @@ public class Docente {
     public void setData_di_nascita(Date data_di_nascita) {
         this.data_di_nascita = data_di_nascita;
     }
+<<<<<<< HEAD
 
     public List<Corso> getCorsi() {return corsi;}
 
     public void setCorsi(List<Corso> corsi) {this.corsi = corsi;}
 
+=======
+>>>>>>> Rest-Controller
 }
