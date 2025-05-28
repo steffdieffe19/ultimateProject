@@ -1,29 +1,27 @@
 package com.example.demo.service;
 
-<<<<<<< HEAD
 import com.example.demo.Mapper.DocenteMapper;
-=======
->>>>>>> Rest-Controller
+import com.example.demo.data.DTO.DocenteDTO;
 import com.example.demo.data.entity.Docente;
 import com.example.demo.repository.DocenteRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-
-import com.example.demo.data.DTO.DocenteDTO;
 
 @Service
-@Transactional //serve per gestire bene le transazioni
+@Transactional
 public class DocenteService {
 
-<<<<<<< HEAD
+    private final DocenteRepository docenteRepository;
+    private final DocenteMapper docenteMapper;
+
     @Autowired
-    private DocenteRepository docenteRepository;
-    @Autowired
-    private DocenteMapper docenteMapper;
+    public DocenteService(DocenteRepository docenteRepository, DocenteMapper docenteMapper) {
+        this.docenteRepository = docenteRepository;
+        this.docenteMapper = docenteMapper;
+    }
 
     public List<DocenteDTO> getAllDocenti() {
         List<Docente> docenti = docenteRepository.findAll();
@@ -31,7 +29,8 @@ public class DocenteService {
     }
 
     public DocenteDTO getDocente(Long id) {
-        Docente docente = docenteRepository.findById(id).orElseThrow(() -> new RuntimeException("Docente non trovato"));
+        Docente docente = docenteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Docente non trovato"));
         return docenteMapper.toDTO(docente);
     }
 
@@ -39,35 +38,18 @@ public class DocenteService {
         Docente docente = docenteMapper.toEntity(docenteDTO);
         docenteRepository.save(docente);
         return docenteMapper.toDTO(docente);
-=======
-   private final DocenteRepository docenteRepository;
-
-    @Autowired
-    public DocenteService(DocenteRepository docenteRepository){
-
-        this.docenteRepository=docenteRepository;
-    }
-    public List<Docente> getAllDocenti()  {
-        return docenteRepository.findAll();
     }
 
-    public Optional<Docente> getDocenteById(Long id) {
-        return docenteRepository.findById(id);
-    }
+    public DocenteDTO update(DocenteDTO docenteDTO) {
+        Docente existing = docenteRepository.findById(docenteDTO.getId())
+                .orElseThrow(() -> new RuntimeException("Docente non trovato con id: " + docenteDTO.getId()));
 
-    public Docente createDocente(Docente docente) {
-        return docenteRepository.save(docente);
-    }
+        existing.setNome(docenteDTO.getNome());
+        existing.setCognome(docenteDTO.getCognome());
+        existing.setData_di_nascita(docenteDTO.getData_di_nascita());
 
-    public Docente updateDocente(Docente docente) {
-        Docente existing = docenteRepository.findById(docente.getId())
-                .orElseThrow(() -> new RuntimeException("Docente non trovato con id: " + docente.getId()));
-
-        existing.setNome(docente.getNome());
-        existing.setCognome(docente.getCognome());
-
-        return docenteRepository.save(existing);
->>>>>>> Rest-Controller
+        docenteRepository.save(existing);
+        return docenteMapper.toDTO(existing);
     }
 
     public void delete(Long id) {
@@ -75,7 +57,4 @@ public class DocenteService {
                 .orElseThrow(() -> new RuntimeException("Docente non trovato"));
         docenteRepository.delete(docente);
     }
-
-
 }
-

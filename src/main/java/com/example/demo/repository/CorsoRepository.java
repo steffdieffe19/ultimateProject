@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface CorsoRepository extends JpaRepository<Corso, Long> {
-<<<<<<< HEAD
+
 
     @Query("SELECT c FROM Corso c ORDER BY c.nome")
     List<Corso> findAllSortedByNome();
@@ -19,7 +19,7 @@ public interface CorsoRepository extends JpaRepository<Corso, Long> {
     List<Corso> findAllWithDocente();
 
     List<Corso> findByDocenteId(Long docenteId);
-=======
+
     List<Corso> findByNomeContainingIgnoreCase(String nome);
     
     @Query("SELECT c FROM Corso c WHERE c.docente.nome = :nome AND c.docente.cognome = :cognome")
@@ -30,5 +30,4 @@ public interface CorsoRepository extends JpaRepository<Corso, Long> {
     
     @Query("SELECT c FROM Corso c LEFT JOIN FETCH c.docente LEFT JOIN FETCH c.discenti")
     List<Corso> findAllWithDetails();
->>>>>>> Rest-Controller
 }

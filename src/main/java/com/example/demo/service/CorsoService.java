@@ -1,15 +1,8 @@
 package com.example.demo.service;
 
-<<<<<<< HEAD
-import com.example.demo.Mapper.CorsoMapper;
-import com.example.demo.data.DTO.CorsoDTO;
-import com.example.demo.data.entity.Corso;
-import com.example.demo.data.entity.Docente;
-=======
 import com.example.demo.data.entity.Corso;
 import com.example.demo.data.entity.Docente;
 import com.example.demo.data.entity.Discente;
->>>>>>> Rest-Controller
 import com.example.demo.repository.CorsoRepository;
 import com.example.demo.repository.DiscenteRepository;
 import com.example.demo.repository.DocenteRepository;
@@ -18,60 +11,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-<<<<<<< HEAD
-import java.sql.SQLException;
-import java.util.stream.Collectors;
-=======
 import java.util.Optional;
->>>>>>> Rest-Controller
 
 @Service
 public class CorsoService {
 
-<<<<<<< HEAD
-    @Autowired
-    private CorsoMapper corsoMapper;
-
-    @Autowired
-    private DocenteRepository docenteRepository;
-
-    public List<Corso> findAllSortedByNome() throws SQLException {
-        return corsoRepository.findAllSortedByNome();
-    }
-
-    public Corso get(Long id) {
-        return corsoRepository.findById(id).orElseThrow();
-    }
-
-    public void save(Corso c) {
-        corsoRepository.save(c);
-    }
-
-    public void delete(Long id) {
-        corsoRepository.deleteById(id);
-    }
-
-    public List<Docente> getAllDocenti() {
-        return docenteRepository.findAll();
-    }
-
-    public List<CorsoDTO> getCorsiByDocenteId(Long docenteId) {
-        List<Corso> corsi = corsoRepository.findByDocenteId(docenteId);
-        return corsi.stream()
-                .map(corsoMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-}
-=======
     private final CorsoRepository corsoRepository;
     private final DiscenteRepository discenteRepository;
     private final DocenteRepository docenteRepository;
 
     @Autowired
-    public CorsoService(CorsoRepository corsoRepository, 
-                       DiscenteRepository discenteRepository,
-                       DocenteRepository docenteRepository) {
+    public CorsoService(CorsoRepository corsoRepository,
+                        DiscenteRepository discenteRepository,
+                        DocenteRepository docenteRepository) {
         this.corsoRepository = corsoRepository;
         this.discenteRepository = discenteRepository;
         this.docenteRepository = docenteRepository;
@@ -116,6 +68,7 @@ public class CorsoService {
 
         return corsoRepository.save(corso);
     }
+
     @Transactional
     public Corso updateCorso(Corso corso) {
         Corso existing = corsoRepository.findById(corso.getId())
@@ -144,9 +97,7 @@ public class CorsoService {
         Corso corso = corsoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Corso non trovato con id: " + id));
 
-        corso.getDiscenti().forEach(discente -> {
-            discente.getCorsi().remove(corso);
-        });
+        corso.getDiscenti().forEach(discente -> discente.getCorsi().remove(corso));
         corso.getDiscenti().clear();
 
         corsoRepository.delete(corso);
@@ -159,7 +110,7 @@ public class CorsoService {
 
         Discente discente = discenteRepository.findByNomeAndCognome(nomeDiscente, cognomeDiscente)
                 .orElseThrow(() -> new RuntimeException(
-                    "Discente non trovato: " + nomeDiscente + " " + cognomeDiscente));
+                        "Discente non trovato: " + nomeDiscente + " " + cognomeDiscente));
 
         if (!corso.getDiscenti().contains(discente)) {
             corso.getDiscenti().add(discente);
@@ -176,7 +127,7 @@ public class CorsoService {
 
         Discente discente = discenteRepository.findByNomeAndCognome(nomeDiscente, cognomeDiscente)
                 .orElseThrow(() -> new RuntimeException(
-                    "Discente non trovato: " + nomeDiscente + " " + cognomeDiscente));
+                        "Discente non trovato: " + nomeDiscente + " " + cognomeDiscente));
 
         corso.getDiscenti().remove(discente);
         discente.getCorsi().remove(corso);
@@ -196,9 +147,9 @@ public class CorsoService {
         if (corso.getAnno_accademico() == null) {
             throw new IllegalArgumentException("L'anno accademico non può essere vuoto");
         }
-        if (corso.getDocente() == null || 
-            corso.getDocente().getNome() == null || 
-            corso.getDocente().getCognome() == null) {
+        if (corso.getDocente() == null ||
+                corso.getDocente().getNome() == null ||
+                corso.getDocente().getCognome() == null) {
             throw new IllegalArgumentException("Il docente è obbligatorio");
         }
     }
@@ -210,9 +161,8 @@ public class CorsoService {
                 .orElseThrow(() -> new RuntimeException("Corso non trovato con id: " + corsoId));
     }
 
-
+    @Transactional(readOnly = true)
     public Optional<Docente> getDocenteByNomeAndCognome(String nome, String cognome) {
         return docenteRepository.findByNomeAndCognome(nome, cognome);
     }
 }
->>>>>>> Rest-Controller

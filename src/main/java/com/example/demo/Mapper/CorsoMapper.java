@@ -1,30 +1,27 @@
 package com.example.demo.Mapper;
 
 import com.example.demo.data.DTO.CorsoDTO;
+import com.example.demo.data.DTO.DocenteLiteDTO;
+import com.example.demo.data.DTO.DiscenteLiteDTO;
 import com.example.demo.data.entity.Corso;
+import com.example.demo.data.entity.Docente;
 import com.example.demo.data.entity.Discente;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
-
+@Mapper(componentModel = "spring", uses = {DocenteLiteDTO.class, DiscenteLiteDTO.class})
 public interface CorsoMapper {
-    @Mapping(source = "docente.id", target = "id_docente")
-    @Mapping(source = "discenti", target = "discentiId", qualifiedByName = "mapDiscentiToIds" )
-    CorsoDTO toDto(Corso corso);
 
-    @Mapping(source = "id_docente", target = "docente.id")
-    @Mapping(target = "discenti", ignore = true)
+    @Mapping(source = "docente", target = "docente")
+    @Mapping(source = "discenti", target = "discenti")
+    CorsoDTO toDTO(Corso corso);
+
+    @Mapping(source = "docente", target = "docente")
+    @Mapping(source = "discenti", target = "discenti")
     Corso toEntity(CorsoDTO corsoDTO);
 
-    List<CorsoDTO> toDtoList(List<Corso> corsi);
-
-    @Named("mapDiscentiToIds")
-    static List<Long> mapDiscentiToIds(List<Discente>discenti){
-        if (discenti ==null) return null;
-        return discenti.stream().map(Discente::getId).toList();
-    }
+    List<CorsoDTO> toDTOList(List<Corso> corsi);
+    List<Corso> toEntityList(List<CorsoDTO> corsiDTO);
 }
